@@ -13,6 +13,8 @@ import com.vikuman.quizapp.dao.QuizDao;
 import com.vikuman.quizapp.model.Question;
 import com.vikuman.quizapp.model.QuestionWrapper;
 import com.vikuman.quizapp.model.Quiz;
+import com.vikuman.quizapp.model.Response;
+
 import java.util.ArrayList;
 
 @Service
@@ -43,6 +45,21 @@ public class QuizService {
                     question.getOption1(), question.getOption2(), question.getOption3(), question.getOption4()));
         }
         return new ResponseEntity<>(questionForUser, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Integer> submitQuiz(Integer id, List<Response> response) {
+        List<Question> questionsFromDb = quizDao.findById(id).get().getQuestion();
+        int Score = 0;
+        for (Question question : questionsFromDb) {
+            for (Response res : response) {
+                if (question.getId() == res.getId()) {
+                    if (res.getResponse().equals(question.getRightAnswer())) {
+                        Score++;
+                    }
+                }
+            }
+        }
+        return new ResponseEntity<Integer>(Score, HttpStatus.OK);
     }
 
 }
